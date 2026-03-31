@@ -887,7 +887,8 @@ fbq('track', 'PageView');
                 </svg>
             </button>
             <div class="modal-header">Extensão de Vídeo IA</div>
-            <h2 class="modal-title" style="margin-bottom: 32px;">Configurar Continuação</h2>
+            <h2 class="modal-title" style="margin-bottom: 12px;">Configurar Continuação</h2>
+            <p class="modal-text" style="font-size: 13px; margin-bottom: 32px;">O vídeo será estendido por mais 10 segundos e será iniciado novamente após a geração.</p>
             
             <div class="input-group">
                 <label class="input-label">Duração da Continuação</label>
@@ -1121,6 +1122,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let currentTargetVideoId = null;
     let isVideo3Generated = localStorage.getItem('bastionVideo3Generated') === 'true';
     let ageVerified = localStorage.getItem('bastionAgeVerified') === 'true';
+    let isImageUploaded = false;
 
     if (!ageVerified) {
         ageGateModal.classList.add('active');
@@ -1276,6 +1278,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     executeImg2VidBtn.addEventListener('click', () => {
+        if (!isImageUploaded) {
+            alert('Por favor, faça o upload de uma imagem para gerar o vídeo.');
+            return;
+        }
         img2vidModal.classList.remove('active');
         setTimeout(openPaywallAction, 300);
     });
@@ -1293,6 +1299,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 uploadPreview.style.display = 'block';
                 uploadIcon.style.display = 'none';
                 fileUploadText.innerText = 'Imagem selecionada (Toque para trocar)';
+                isImageUploaded = true;
             }
             reader.readAsDataURL(file);
         }
