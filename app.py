@@ -16,8 +16,8 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MEDIA_FOLDER = os.path.join(BASE_DIR, 'media')
 DB_PATH = os.path.join(BASE_DIR, 'bastion_tracking.db')
 
-PLUMIFY_API_TOKEN = "hXIVPQ9kPjSQERpJ7ljKkWT0f6qOet4tUgr7kP4LTer5b0SsRq7VaUalBdGg"
-PLUMIFY_ENDPOINT = f"https://api.plumify.com.br/api/public/v1/transactions?api_token={PLUMIFY_API_TOKEN}"
+PLUMIFY_API_TOKEN = "oI9madY2L6gDfIToH4o7GQjnYlvpOX7aJD0GtH8BdWGHyIerGgm8s5XMTJ8x"
+PLUMIFY_ENDPOINT = f"https://api.atomopay.com.br/api/public/v1/transactions?api_token={PLUMIFY_API_TOKEN}"
 
 META_PIXEL_ID = "1271724644401924"
 META_CAPI_ACCESS_TOKEN = "EAAY3pJasrWUBRHjNp1JhJ9HZCAJ1zjjmWF3SqYVWZCkvgBqhG47ZAWHgtCiyMlZCrCrR2hnq4IZB7C6O9nRbiFZBB0C51oSGQrEDYZCGabW29EYwjCDuoNHWBr1hDDzkPGLbLRE1eJZAgHR3G6L5XN68rjmptmZAAc3fZBnt3xLh8GUFFlskHousgYyXPj4bbV3qt6TwZDZD"
@@ -111,7 +111,7 @@ def create_payment():
     payload = request.get_json(silent=True) or {}
     customer_data = payload.get("customer", {
         "name": "BASTIONSTREAM LTDA",
-        "email": "marciojosedossantos123455@gmail.com",
+        "email": "cliente@exemplo.com",
         "phone_number": "11999999999",
         "document": "09115751031",
         "street_name": "Rua das Flores",
@@ -124,14 +124,14 @@ def create_payment():
     })
     api_payload = {
         "amount": 2000,
-        "offer_hash": "taebbjxtkr",
+        "offer_hash": "zfglddzogu",
         "payment_method": "pix",
         "installments": 1,
         "customer": customer_data,
         "cart": [
             {
-                "product_hash": "56aujwvfng",
-                "title": "Acesso Premium BastionStream 6 meses",
+                "product_hash": "spdgalirqt",
+                "title": "Acesso Premium BastionStream (6 meses)",
                 "cover": None,
                 "price": 2000,
                 "quantity": 1,
