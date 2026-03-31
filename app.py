@@ -123,7 +123,7 @@ def create_payment():
         "zip_code": "20040020"
     })
     api_payload = {
-        "amount": 796,
+        "amount": 2000,
         "offer_hash": "taebbjxtkr",
         "payment_method": "pix",
         "installments": 1,
@@ -133,7 +133,7 @@ def create_payment():
                 "product_hash": "56aujwvfng",
                 "title": "Acesso Premium BastionStream 6 meses",
                 "cover": None,
-                "price": 796,
+                "price": 2000,
                 "quantity": 1,
                 "operation_type": 1,
                 "tangible": False
