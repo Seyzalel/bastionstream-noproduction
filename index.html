@@ -480,7 +480,7 @@ header {
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.4);
-    z-index: 150;
+    z-index: 90;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -721,7 +721,7 @@ fbq('track', 'PageView');
 
     <main id="feed">
         <div class="video-container" id="container-1">
-            <video class="feed-video" src="/media/video1.MP4" playsinline muted loop></video>
+            <video class="feed-video" src="/media/video1.MP4" playsinline muted loop autoplay></video>
             <div class="floating-actions-center">
                 <button class="premium-action-btn gen-cont-btn" data-video="1">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -1038,9 +1038,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let isMuted = true;
     let currentTargetVideoId = null;
     let isVideo3Generated = localStorage.getItem('bastionVideo3Generated') === 'true';
-    let isPlayingContinuation = false;
     let ageVerified = localStorage.getItem('bastionAgeVerified') === 'true';
-    let allowPlay = ageVerified;
 
     if (!ageVerified) {
         ageGateModal.classList.add('active');
@@ -1049,14 +1047,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ageYesBtn.addEventListener('click', () => {
         localStorage.setItem('bastionAgeVerified', 'true');
         ageVerified = true;
-        allowPlay = true;
         ageGateModal.classList.remove('active');
-        videos.forEach(v => {
-            const rect = v.getBoundingClientRect();
-            if(rect.top >= 0 && rect.bottom <= window.innerHeight) {
-                v.play().catch(() => {});
-            }
-        });
     });
 
     ageNoBtn.addEventListener('click', () => {
@@ -1083,7 +1074,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const videoObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             const video = entry.target;
-            if (entry.isIntersecting && allowPlay) {
+            if (entry.isIntersecting) {
                 video.play().catch(() => {});
             } else {
                 video.pause();
@@ -1095,29 +1086,33 @@ document.addEventListener("DOMContentLoaded", () => {
         videoObserver.observe(video);
         
         video.addEventListener('click', () => {
-            if (!allowPlay) return;
             if (video.paused) {
                 video.play();
             } else {
                 video.pause();
             }
         });
+
+        video.addEventListener('volumechange', () => {
+            if (video.volume > 0 && !video.muted) {
+                isMuted = false;
+                videos.forEach(v => v.muted = false);
+                muteIcon.innerHTML = '<path d="M11 5L6 9H2V15H6L11 19V5Z"/><path d="M15.54 8.46C16.4774 9.39764 17.004 10.6692 17.004 11.995C17.004 13.3208 16.4774 14.5924 15.54 15.53L15.54 8.46Z"/><path d="M19.07 4.93C20.9447 6.80528 21.998 9.34836 21.998 12C21.998 14.6516 20.9447 17.1947 19.07 19.07"/>';
+            }
+        });
     });
 
     const setupVideo3Looping = () => {
-        if (genContBtn3) genContBtn3.style.display = 'none';
+        const freeBadge = genContBtn3.querySelector('.free-badge');
+        if (freeBadge) {
+            freeBadge.remove();
+        }
         video3.removeAttribute('loop');
+        let isContinuation = false;
         video3.addEventListener('ended', () => {
-            if (!isPlayingContinuation) {
-                video3.src = '/media/video3-continuation.mp4';
-                isPlayingContinuation = true;
-            } else {
-                video3.src = '/media/video3.mp4';
-                isPlayingContinuation = false;
-            }
-            if (allowPlay) {
-                video3.play().catch(() => {});
-            }
+            isContinuation = !isContinuation;
+            video3.src = isContinuation ? '/media/video3-continuation.MP4' : '/media/video3.MP4';
+            video3.play().catch(() => {});
         });
     };
 
@@ -1230,10 +1225,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 setupVideo3Looping();
                 
                 video3.src = '/media/video3-continuation.MP4';
-                isPlayingContinuation = true;
-                if (allowPlay) {
-                    video3.play().catch(() => {});
-                }
+                video3.play().catch(() => {});
                 
             }, randomWait);
         } else {
