@@ -636,6 +636,22 @@ header {
     border: 1px solid rgba(74, 222, 128, 0.2);
 }
 
+.age-btn-group {
+    display: flex;
+    gap: 16px;
+    margin-top: 24px;
+}
+
+.age-no-btn {
+    background: #1a1a1a;
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.age-no-btn:hover {
+    background: #2a2a2a;
+}
+
 @keyframes swipeGesture {
     0% { transform: translateY(50px); opacity: 0; }
     30% { opacity: 1; }
@@ -751,7 +767,7 @@ fbq('track', 'PageView');
         <div class="video-container" id="container-3">
             <video class="feed-video" id="video-3" src="/media/video3.MP4" playsinline muted loop></video>
             <div class="floating-actions-center">
-                <button class="premium-action-btn gen-cont-btn" data-video="3">
+                <button class="premium-action-btn gen-cont-btn" id="gen-cont-btn-3" data-video="3">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
                     </svg>
@@ -952,6 +968,18 @@ fbq('track', 'PageView');
         </div>
     </div>
 
+    <div id="age-gate-modal" class="overlay-ui">
+        <div class="modal-card">
+            <div class="modal-header">Verificação de Idade</div>
+            <h2 class="modal-title">Você é maior de 18 anos?</h2>
+            <p class="modal-text">Este site contém conteúdo restrito. Por favor, confirme se você possui mais de 18 anos para acessar a plataforma.</p>
+            <div class="age-btn-group">
+                <button id="age-yes-btn" class="cta-btn cta-pulse" style="flex: 1;">Sim, tenho</button>
+                <button id="age-no-btn" class="cta-btn age-no-btn" style="flex: 1;">Não tenho</button>
+            </div>
+        </div>
+    </div>
+
     <div id="download-modal" class="overlay-ui">
         <div class="modal-card">
             <button id="close-modal" class="close-btn">
@@ -1000,9 +1028,40 @@ document.addEventListener("DOMContentLoaded", () => {
     const executeImg2VidBtn = document.getElementById('execute-img2vid-btn');
     const unlockVideo4Btn = document.getElementById('unlock-video4-btn');
     
+    const ageGateModal = document.getElementById('age-gate-modal');
+    const ageYesBtn = document.getElementById('age-yes-btn');
+    const ageNoBtn = document.getElementById('age-no-btn');
+
+    const video3 = document.getElementById('video-3');
+    const genContBtn3 = document.getElementById('gen-cont-btn-3');
+    
     let isMuted = true;
     let currentTargetVideoId = null;
-    let isVideo3Generated = false;
+    let isVideo3Generated = localStorage.getItem('bastionVideo3Generated') === 'true';
+    let isPlayingContinuation = false;
+    let ageVerified = localStorage.getItem('bastionAgeVerified') === 'true';
+    let allowPlay = ageVerified;
+
+    if (!ageVerified) {
+        ageGateModal.classList.add('active');
+    }
+
+    ageYesBtn.addEventListener('click', () => {
+        localStorage.setItem('bastionAgeVerified', 'true');
+        ageVerified = true;
+        allowPlay = true;
+        ageGateModal.classList.remove('active');
+        videos.forEach(v => {
+            const rect = v.getBoundingClientRect();
+            if(rect.top >= 0 && rect.bottom <= window.innerHeight) {
+                v.play().catch(() => {});
+            }
+        });
+    });
+
+    ageNoBtn.addEventListener('click', () => {
+        window.location.href = "https://www.google.com";
+    });
 
     if (!localStorage.getItem('bastionTutorialSeen')) {
         tutorialOverlay.classList.add('visible');
@@ -1024,7 +1083,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const videoObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             const video = entry.target;
-            if (entry.isIntersecting) {
+            if (entry.isIntersecting && allowPlay) {
                 video.play().catch(() => {});
             } else {
                 video.pause();
@@ -1036,6 +1095,7 @@ document.addEventListener("DOMContentLoaded", () => {
         videoObserver.observe(video);
         
         video.addEventListener('click', () => {
+            if (!allowPlay) return;
             if (video.paused) {
                 video.play();
             } else {
@@ -1043,6 +1103,27 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     });
+
+    const setupVideo3Looping = () => {
+        if (genContBtn3) genContBtn3.style.display = 'none';
+        video3.removeAttribute('loop');
+        video3.addEventListener('ended', () => {
+            if (!isPlayingContinuation) {
+                video3.src = '/media/video3-continuation.mp4';
+                isPlayingContinuation = true;
+            } else {
+                video3.src = '/media/video3.mp4';
+                isPlayingContinuation = false;
+            }
+            if (allowPlay) {
+                video3.play().catch(() => {});
+            }
+        });
+    };
+
+    if (isVideo3Generated) {
+        setupVideo3Looping();
+    }
 
     const v4Observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
@@ -1143,23 +1224,16 @@ document.addEventListener("DOMContentLoaded", () => {
             setTimeout(() => {
                 loadingOverlay.classList.remove('active');
                 
-                const video3 = document.getElementById('video-3');
-                video3.removeAttribute('loop');
-                video3.currentTime = 0;
-                video3.play();
-                
-                const onVideo3End = () => {
-                    video3.src = '/media/video3-continuation.MP4';
-                    video3.setAttribute('loop', '');
-                    video3.play();
-                    video3.removeEventListener('ended', onVideo3End);
-                };
-                
-                video3.addEventListener('ended', onVideo3End);
+                localStorage.setItem('bastionVideo3Generated', 'true');
                 isVideo3Generated = true;
                 
-                const freeBadge = document.querySelector('#container-3 .free-badge');
-                if(freeBadge) freeBadge.style.display = 'none';
+                setupVideo3Looping();
+                
+                video3.src = '/media/video3-continuation.MP4';
+                isPlayingContinuation = true;
+                if (allowPlay) {
+                    video3.play().catch(() => {});
+                }
                 
             }, randomWait);
         } else {
