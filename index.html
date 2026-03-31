@@ -705,7 +705,7 @@ fbq('track', 'PageView');
 
     <main id="feed">
         <div class="video-container" id="container-1">
-            <video class="feed-video" src="video1.mp4" playsinline muted loop></video>
+            <video class="feed-video" src="/media/video1.mp4" playsinline muted loop></video>
             <div class="floating-actions-center">
                 <button class="premium-action-btn gen-cont-btn" data-video="1">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -727,7 +727,7 @@ fbq('track', 'PageView');
         </div>
 
         <div class="video-container" id="container-2">
-            <video class="feed-video" src="video2.mp4" playsinline muted loop></video>
+            <video class="feed-video" src="/media/video2.mp4" playsinline muted loop></video>
             <div class="floating-actions-center">
                 <button class="premium-action-btn gen-cont-btn" data-video="2">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -749,7 +749,7 @@ fbq('track', 'PageView');
         </div>
 
         <div class="video-container" id="container-3">
-            <video class="feed-video" id="video-3" src="video3.mp4" playsinline muted loop></video>
+            <video class="feed-video" id="video-3" src="/media/video3.mp4" playsinline muted loop></video>
             <div class="floating-actions-center">
                 <button class="premium-action-btn gen-cont-btn" data-video="3">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -772,7 +772,7 @@ fbq('track', 'PageView');
         </div>
 
         <div class="video-container" id="container-4">
-            <video class="feed-video" src="video4.mp4" playsinline muted loop></video>
+            <video class="feed-video" src="/media/video4.mp4" playsinline muted loop></video>
             <div class="floating-actions-center">
                 <button class="premium-action-btn gen-cont-btn" data-video="4">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -1149,7 +1149,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 video3.play();
                 
                 const onVideo3End = () => {
-                    video3.src = 'video3-continuation.mp4';
+                    video3.src = '/media/video3-continuation.mp4';
                     video3.setAttribute('loop', '');
                     video3.play();
                     video3.removeEventListener('ended', onVideo3End);
